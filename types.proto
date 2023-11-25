@@ -1,0 +1,430 @@
+syntax = "proto3";
+package github.com.deepcodeai.artifacts.types;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.protosizer_all) = true;
+option (gogoproto.sizer_all) = false;
+option go_package = "types";
+
+message AnalysisConfig {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	repeated string files = 1;
+	repeated string exclude_patterns = 2;
+	repeated string exclude_files = 3;
+	repeated string test_files = 4;
+	repeated string test_patterns = 5;
+}
+
+message AnalysisError {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string hmessage = 1 [(gogoproto.customname) = "HMessage"];
+	int64 level = 2 [(gogoproto.casttype) = "int"];
+}
+
+message AnalysisReport {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	repeated github.com.deepcodeai.artifacts.types.Issue issues = 1 [(gogoproto.nullable) = false];
+	repeated github.com.deepcodeai.artifacts.types.Metric metrics = 2 [(gogoproto.nullable) = false];
+	bool is_passed = 3;
+	repeated github.com.deepcodeai.artifacts.types.AnalysisError errors = 4 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.FileMeta file_meta = 5 [(gogoproto.nullable) = false];
+}
+
+message AnalysisResult {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	github.com.deepcodeai.artifacts.types.Status status = 2 [(gogoproto.nullable) = false];
+	string check_seq = 3;
+	github.com.deepcodeai.artifacts.types.AnalysisReport report = 4 [(gogoproto.nullable) = false];
+}
+
+message AnalysisRun {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string run_serial = 2;
+	bool dsconfig_updated = 3 [(gogoproto.customname) = "DSConfigUpdated"];
+	github.com.deepcodeai.artifacts.types.AnalysisRunVCSMeta vcsmeta = 4 [(gogoproto.customname) = "VCSMeta", (gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.Keys keys = 5 [(gogoproto.nullable) = false];
+	repeated github.com.deepcodeai.artifacts.types.Check checks = 6 [(gogoproto.nullable) = false];
+}
+
+// AnalysisRun type is the expected structure of a analysis run task
+// to be received
+message AnalysisRunVCSMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string remote_url = 1 [(gogoproto.customname) = "RemoteURL"];
+	string base_branch = 2;
+	string base_oid = 3 [(gogoproto.customname) = "BaseOID"];
+	string checkout_oid = 4 [(gogoproto.customname) = "CheckoutOID"];
+	bool clone_submodules = 5;
+}
+
+message AnalysisStateInfo {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	bool if_all_files = 1;
+}
+
+// DSConfig is the struct for .deepsource.toml file
+message Analyzer {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string name = 1;
+	string runtime_version = 2;
+	bool enabled = 3;
+	repeated string dependency_file_paths = 4;
+}
+
+message AnalyzerMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string shortcode = 1;
+	string command = 2;
+	string version = 3;
+	string cpulimit = 4 [(gogoproto.customname) = "CPULimit"];
+	string memory_limit = 5;
+}
+
+message Artifact {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string key = 1;
+	string url = 2 [(gogoproto.customname) = "URL"];
+	github.com.deepcodeai.artifacts.types.Metadata metadata = 3 [(gogoproto.nullable) = false];
+}
+
+message AutofixConfig {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	repeated github.com.deepcodeai.artifacts.types.AutofixIssue issues = 1 [(gogoproto.nullable) = false];
+}
+
+// Issues to be autofixed
+message AutofixIssue {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string issue_code = 1;
+	repeated github.com.deepcodeai.artifacts.types.IssueLocation occurrences = 2 [(gogoproto.nullable) = false];
+}
+
+message AutofixMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string shortcode = 1;
+	string command = 2;
+	string version = 3;
+	string cpulimit = 4 [(gogoproto.customname) = "CPULimit"];
+	string memory_limit = 5;
+}
+
+message AutofixReport {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string code_dir = 1;
+	repeated string modified_files = 2;
+	int64 issues_fixed = 3 [(gogoproto.casttype) = "int"];
+	repeated github.com.deepcodeai.artifacts.types.Metric metrics = 4 [(gogoproto.nullable) = false];
+	repeated github.com.deepcodeai.artifacts.types.Patch patches = 5 [(gogoproto.nullable) = false];
+	repeated github.com.deepcodeai.artifacts.types.Error errors = 6 [(gogoproto.nullable) = false];
+}
+
+message AutofixResult {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	github.com.deepcodeai.artifacts.types.Status status = 2 [(gogoproto.nullable) = false];
+	string check_seq = 3;
+	github.com.deepcodeai.artifacts.types.AutofixReport report = 4 [(gogoproto.nullable) = false];
+}
+
+message AutofixRun {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string run_serial = 2;
+	github.com.deepcodeai.artifacts.types.AutofixVCSMeta vcsmeta = 3 [(gogoproto.customname) = "VCSMeta", (gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.Keys keys = 4 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.Autofixer autofixer = 5 [(gogoproto.nullable) = false];
+}
+
+message AutofixVCSMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string remote_url = 1 [(gogoproto.customname) = "RemoteURL"];
+	string base_branch = 2;
+	string checkout_oid = 3 [(gogoproto.customname) = "CheckoutOID"];
+	bool clone_submodules = 4;
+}
+
+message Autofixer {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	github.com.deepcodeai.artifacts.types.AutofixMeta autofix_meta = 1 [(gogoproto.nullable) = false];
+	repeated github.com.deepcodeai.artifacts.types.AutofixIssue autofixes = 2 [(gogoproto.nullable) = false];
+}
+
+message BeaconResult {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	repeated github.com.deepcodeai.artifacts.types.File files = 1 [(gogoproto.nullable) = false];
+}
+
+// Beacon type is the expected structure of a beacon task
+// to be received
+message BeaconRun {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	int64 repository_id = 2 [(gogoproto.customname) = "RepositoryID"];
+}
+
+message BeaconStatusMsg {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string project_id = 2 [(gogoproto.customname) = "ProjectID"];
+	github.com.deepcodeai.artifacts.types.Status status = 3 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.BeaconResult result = 4 [(gogoproto.nullable) = false];
+}
+
+// CancelCheckRun type is the expected structure of a check cancellation
+// task to be recieved
+message CancelCheckAnalysisMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string run_serial = 2;
+	string check_seq = 3;
+}
+
+message CancelCheckResult {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	github.com.deepcodeai.artifacts.types.Status status = 2 [(gogoproto.nullable) = false];
+}
+
+message CancelCheckRun {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	github.com.deepcodeai.artifacts.types.CancelCheckAnalysisMeta analysis_meta = 1 [(gogoproto.nullable) = false];
+	string run_id = 2 [(gogoproto.customname) = "RunID"];
+	string run_serial = 3;
+}
+
+message Change {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string before_html = 1 [(gogoproto.customname) = "BeforeHTML"];
+	string after_html = 2 [(gogoproto.customname) = "AfterHTML"];
+	string changeset = 3;
+}
+
+message Check {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string check_seq = 1;
+	repeated github.com.deepcodeai.artifacts.types.Artifact artifacts = 2 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.AnalyzerMeta analyzer_meta = 3 [(gogoproto.nullable) = false];
+	repeated string processors = 4;
+}
+
+message Coordinate {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	int64 line = 1 [(gogoproto.casttype) = "int"];
+	int64 column = 2 [(gogoproto.casttype) = "int"];
+}
+
+message DSConfig {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	int64 version = 1 [(gogoproto.casttype) = "int"];
+	repeated string exclude_patterns = 2;
+	repeated string test_patterns = 3;
+	repeated github.com.deepcodeai.artifacts.types.Analyzer analyzers = 4 [(gogoproto.nullable) = false];
+}
+
+message DiffMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	repeated int64 additions = 1 [(gogoproto.casttype) = "int"];
+	repeated int64 deletions = 2 [(gogoproto.casttype) = "int"];
+}
+
+message Error {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string hmessage = 1 [(gogoproto.customname) = "HMessage"];
+	int64 level = 2 [(gogoproto.casttype) = "int"];
+}
+
+message File {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	int32 path = 1 [(gogoproto.casttype) = "int8"];
+	int32 q1 = 2 [(gogoproto.casttype) = "int8"];
+	int32 q3 = 3 [(gogoproto.casttype) = "int8"];
+	int32 q7 = 4 [(gogoproto.casttype) = "int8"];
+	int32 q15 = 5 [(gogoproto.casttype) = "int8"];
+	int32 q30 = 6 [(gogoproto.casttype) = "int8"];
+	int32 q60 = 7 [(gogoproto.casttype) = "int8"];
+	int32 q180 = 8 [(gogoproto.casttype) = "int8"];
+}
+
+message FileMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	bool if_all = 1;
+	repeated string deleted = 2;
+	repeated string renamed = 3;
+	repeated string modified = 4;
+	map<string, github.com.deepcodeai.artifacts.types.DiffMeta> diff_meta = 5 [(gogoproto.nullable) = false];
+}
+
+message Issue {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string issue_code = 1;
+	string issue_text = 2;
+	github.com.deepcodeai.artifacts.types.Location location = 3 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.ProcessedData processed_data = 4 [(gogoproto.nullable) = false];
+}
+
+// Location of an issue
+message IssueLocation {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string path = 1;
+	github.com.deepcodeai.artifacts.types.Position position = 2 [(gogoproto.nullable) = false];
+}
+
+message Keys {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	github.com.deepcodeai.artifacts.types.SSH ssh = 1 [(gogoproto.customname) = "SSH", (gogoproto.nullable) = false];
+}
+
+message Location {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string path = 1;
+	github.com.deepcodeai.artifacts.types.Position position = 2 [(gogoproto.nullable) = false];
+}
+
+message MarvinAnalysisConfig {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string check_seq = 2;
+	string analyzer_shortcode = 3;
+	string analyzer_command = 4;
+	string base_oid = 5 [(gogoproto.customname) = "BaseOID"];
+	string checkout_oid = 6 [(gogoproto.customname) = "CheckoutOID"];
+	bool dsconfig_updated = 7 [(gogoproto.customname) = "DSConfigUpdated"];
+	repeated string processors = 8;
+}
+
+message MarvinAutofixConfig {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string analyzer_shortcode = 2;
+	string autofixer_command = 3;
+	string checkout_oid = 4 [(gogoproto.customname) = "CheckoutOID"];
+	string autofix_issues = 5;
+}
+
+// Artifact is data sent via CLI and stored in s3
+message Metadata {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string work_dir = 1;
+}
+
+message Metric {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string metric_code = 1;
+	repeated github.com.deepcodeai.artifacts.types.Namespace namespaces = 2 [(gogoproto.nullable) = false];
+}
+
+message Namespace {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string key = 1;
+	double value = 2;
+}
+
+message Patch {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string filename = 1;
+	repeated github.com.deepcodeai.artifacts.types.Change changes = 2 [(gogoproto.nullable) = false];
+}
+
+message Position {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	github.com.deepcodeai.artifacts.types.Coordinate begin = 1 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.Coordinate end = 2 [(gogoproto.nullable) = false];
+}
+
+message ProcessedData {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	github.com.deepcodeai.artifacts.types.SourceCode source_code = 1 [(gogoproto.nullable) = false];
+}
+
+message RepoResult {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	github.com.deepcodeai.artifacts.types.Status status = 2 [(gogoproto.nullable) = false];
+	github.com.deepcodeai.artifacts.types.DSConfig dsconfig = 3 [(gogoproto.customname) = "DSConfig", (gogoproto.nullable) = false];
+}
+
+message RepoRun {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string run_id = 1 [(gogoproto.customname) = "RunID"];
+	string run_serial = 2;
+	github.com.deepcodeai.artifacts.types.RepoRunVCSMeta vcsmeta = 3 [(gogoproto.customname) = "VCSMeta", (gogoproto.nullable) = false];
+}
+
+// RepoRun type is the expected structure of a repo run task
+// to be received
+message RepoRunVCSMeta {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string remote_url = 1 [(gogoproto.customname) = "RemoteURL"];
+	string checkout_oid = 2 [(gogoproto.customname) = "CheckoutOID"];
+}
+
+message SSH {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string public = 1;
+	string private = 2;
+}
+
+message SourceCode {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string rendered = 1;
+}
+
+message Status {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	int64 code = 1 [(gogoproto.casttype) = "int"];
+	string hmessage = 2 [(gogoproto.customname) = "HMessage"];
+	string err = 3;
+}
