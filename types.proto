@@ -72,7 +72,7 @@ message AnalysisStateInfo {
 	bool if_all_files = 1;
 }
 
-// DSConfig is the struct for .deepsource.toml file
+// DSConfig is the struct for .deepcode.toml file
 message Analyzer {
 	option (gogoproto.goproto_getters) = false;
 	option (gogoproto.typedecl) = false;
